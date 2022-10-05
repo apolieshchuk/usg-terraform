@@ -89,18 +89,30 @@ variable "staging_env" {
   type = list(object({ name: string, value: string }))
 }
 
-variable "ssl_api_certificate_arn" {
-  description = "SSL certificate arn for api.staging.usgua.click and api.dev.usgua.click"
-  type = object({
-    staging: string,
-    dev: string,
-  })
-}
+//variable "ssl_api_certificate_arn" {
+//  description = "SSL certificate arn for api.staging.usgua.click and api.dev.usgua.click"
+//  type = object({
+//    staging: string,
+//    dev: string,
+//  })
+//}
 
-variable "api_domen" {
-  description = "environment domens"
-  type = object({
-    staging: string,
-    dev: string,
-  })
+variable "domain" {
+  description = "domain name"
+  type = string
 }
+//variable "api_domen" {
+//  description = "environment domens"
+//  type = object({
+//    staging: string,
+//    dev: string,
+//  })
+//}
+//
+//variable "api_eip" {
+//  description = "environment elastic(static) ip for whitelists"
+//  type = object({
+//    staging: string,
+//    dev: string,
+//  })
+//}

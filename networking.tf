@@ -60,23 +60,31 @@ resource "aws_route_table_association" "public" {
 /* That is all tied together with the route table association, where the private route table that includes
  the NAT gateway is added to the private subnets defined earlier. */
 
-// Elastic IP
-resource "aws_eip" "gateway" {
-  count      = 1
-  vpc        = true
-  depends_on = [aws_internet_gateway.aws-igw]
-
+// Elastic IP (get exist from aws directly)
+data "aws_eip" "eip" {
   tags = {
     Name = "${var.app_name}-${terraform.workspace}-eip"
   }
 }
+
+// Or create new
+//resource "aws_eip" "gateway" {
+//  count      = 1
+//  vpc        = true
+//  depends_on = [aws_internet_gateway.aws-igw]
+//
+//  tags = {
+//    Name = "${var.app_name}-${terraform.workspace}-eip"
+//  }
+//}
 
 /* The NAT gateway allows resources within the VPC to communicate with
 the internet but will prevent communication to the VPC from outside sources */
 resource "aws_nat_gateway" "gateway" {
   count         = 1
   subnet_id     = element(aws_subnet.public.*.id, count.index)
-  allocation_id = element(aws_eip.gateway.*.id, count.index)
+//  allocation_id = element(aws_eip.gateway.*.id, count.index)// ToDo
+  allocation_id = data.aws_eip.eip.id
   tags = {
     Name = "${var.app_name}-${terraform.workspace}-nat"
   }

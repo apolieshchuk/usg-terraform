@@ -15,7 +15,7 @@ resource "aws_lb_listener" "https_listener" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
-  certificate_arn   = lookup(var.ssl_api_certificate_arn, terraform.workspace)
+  certificate_arn   = data.aws_acm_certificate.ssl_certificate.arn
 
   default_action {
     type             = "fixed-response"
@@ -39,7 +39,7 @@ resource "aws_lb_listener_rule" "static" {
 
   condition {
     host_header {
-      values = [lookup(var.api_domen, terraform.workspace)]
+      values = ["api.${terraform.workspace}.${var.domain}"]
     }
   }
 }
