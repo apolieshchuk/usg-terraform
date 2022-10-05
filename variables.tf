@@ -84,10 +84,10 @@ variable "availability_zones" {
   description = "List of availability zones"
 }
 
-variable "staging_env" {
-  description = "Staging env config"
-  type = list(object({ name: string, value: string }))
-}
+//variable "staging_env" {
+//  description = "Staging env config"
+//  type = list(object({ name: string, value: string }))
+//}
 
 //variable "ssl_api_certificate_arn" {
 //  description = "SSL certificate arn for api.staging.usgua.click and api.dev.usgua.click"
@@ -101,13 +101,14 @@ variable "domain" {
   description = "domain name"
   type = string
 }
-//variable "api_domen" {
-//  description = "environment domens"
-//  type = object({
-//    staging: string,
-//    dev: string,
-//  })
-//}
+
+variable "env_variables" {
+  description = "environment variables"
+  type = object({
+    staging: list(object({ name: string, value: string })),
+    dev: list(object({ name: string, value: string })),
+  })
+}
 //
 //variable "api_eip" {
 //  description = "environment elastic(static) ip for whitelists"

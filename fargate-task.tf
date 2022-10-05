@@ -25,7 +25,7 @@ resource "aws_ecs_task_definition" "aws-ecs-task" {
       repositoryCredentials : {
         credentialsParameter : var.app_image_arm_token
       },
-      environment: var.staging_env,
+      environment: lookup(var.env_variables, terraform.workspace),
       essential: true,
       logConfiguration: {
         logDriver: "awslogs",
