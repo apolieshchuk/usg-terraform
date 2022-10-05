@@ -8,7 +8,7 @@ resource "aws_alb" "application_load_balancer" {
   security_groups    = [aws_security_group.load_balancer_security_group.id]
 
   tags = {
-    Name        = "${var.app_name}-alb"
+    Name        = "${var.app_name}-${terraform.workspace}-alb"
     Environment = terraform.workspace
   }
 }

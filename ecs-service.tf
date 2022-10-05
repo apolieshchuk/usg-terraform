@@ -62,7 +62,7 @@ resource "aws_security_group" "service_security_group" {
   }
 
   tags = {
-    Name        = "${var.app_name}-service-sg"
+    Name        = "${var.app_name}-${terraform.workspace}-service-sg"
     Environment = terraform.workspace
   }
 }

@@ -18,7 +18,7 @@ resource "aws_lb_target_group" "target_group" {
   }
 
   tags = {
-    Name        = "${var.app_name}-lb-tg"
+    Name        = "${var.app_name}-${terraform.workspace}-lb-tg"
     Environment = terraform.workspace
   }
 }

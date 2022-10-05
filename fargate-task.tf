@@ -4,7 +4,7 @@
   the API on port var.app_port, so that’s specified as the host and container ports. The network mode is set to “awsvpc”, which
   tells AWS that an elastic network interface and a private IP address should be assigned to the task when it runs.  */
 resource "aws_ecs_task_definition" "aws-ecs-task" {
-  family = "${var.app_name}-task"
+  family = "${var.app_name}-${terraform.workspace}-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   memory                   = "512"
@@ -13,7 +13,7 @@ resource "aws_ecs_task_definition" "aws-ecs-task" {
   task_role_arn            = aws_iam_role.ecsTaskExecutionRole.arn
 
   tags = {
-    Name        = "${var.app_name}-ecs-td"
+    Name        = "${var.app_name}-${terraform.workspace}-ecs-td"
     Environment = terraform.workspace
   }
 

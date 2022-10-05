@@ -6,7 +6,7 @@ resource "aws_vpc" "aws-vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags = {
-    Name        = "${var.app_name}-vpc"
+    Name        = "${var.app_name}-${terraform.workspace}-vpc"
     Environment = terraform.workspace
   }
 }
@@ -15,7 +15,7 @@ resource "aws_vpc" "aws-vpc" {
 resource "aws_internet_gateway" "aws-igw" {
   vpc_id = aws_vpc.aws-vpc.id
   tags = {
-    Name        = "${var.app_name}-igw"
+    Name        = "${var.app_name}-${terraform.workspace}-igw"
     Environment = terraform.workspace
   }
 }
@@ -30,7 +30,7 @@ resource "aws_subnet" "private" {
   availability_zone = element(var.availability_zones, count.index)
 
   tags = {
-    Name        = "${var.app_name}-private-subnet-${count.index + 1}"
+    Name        = "${var.app_name}-${terraform.workspace}-private-subnet-${count.index + 1}"
     Environment = terraform.workspace
   }
 }
@@ -43,7 +43,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name        = "${var.app_name}-public-subnet-${count.index + 1}"
+    Name        = "${var.app_name}-${terraform.workspace}-public-subnet-${count.index + 1}"
     Environment = terraform.workspace
   }
 }
@@ -52,7 +52,7 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.aws-vpc.id
 
   tags = {
-    Name        = "${var.app_name}-routing-table-public"
+    Name        = "${var.app_name}-${terraform.workspace}-routing-table-public"
     Environment = terraform.workspace
   }
 }

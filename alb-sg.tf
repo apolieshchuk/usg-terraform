@@ -30,7 +30,7 @@ resource "aws_security_group" "load_balancer_security_group" {
     ipv6_cidr_blocks = ["::/0"]
   }
   tags = {
-    Name        = "${var.app_name}-sg"
+    Name        = "${var.app_name}-${terraform.workspace}-sg"
     Environment = terraform.workspace
   }
 }
