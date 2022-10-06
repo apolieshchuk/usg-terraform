@@ -11,12 +11,14 @@ resource "aws_vpc" "aws-vpc" {
   }
 }
 
-// allows communication between the VPC and the internet at all
+/* allows communication between the VPC and the internet at all */
 resource "aws_internet_gateway" "aws-igw" {
   vpc_id = aws_vpc.aws-vpc.id
   tags = {
     Name        = "${var.app_name}-${terraform.workspace}-igw"
     Environment = terraform.workspace
+    VPC         = aws_vpc.aws-vpc.id
+    ManagedBy   = "terraform"
   }
 }
 
@@ -34,6 +36,10 @@ resource "aws_subnet" "private" {
     Environment = terraform.workspace
   }
 }
+
+###
+# Route Tables, Routes and Associations
+##
 
 resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.aws-vpc.id
@@ -57,75 +63,20 @@ resource "aws_route_table" "public" {
   }
 }
 
+# Public Route
 resource "aws_route" "public" {
   route_table_id         = aws_route_table.public.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.aws-igw.id
 }
 
+# Public Route to Public Route Table for Public Subnets
 resource "aws_route_table_association" "public" {
   count          = length(var.public_subnets)
   subnet_id      = element(aws_subnet.public.*.id, count.index)
   route_table_id = aws_route_table.public.id
-}
 
-// -----  Static IP addressing (Optional)
-/* That is all tied together with the route table association, where the private route table that includes
- the NAT gateway is added to the private subnets defined earlier. */
-
-// Elastic IP (get exist from aws directly)
-//data "aws_eip" "eip" {
-//  tags = {
-//    Name = "${var.app_name}-${terraform.workspace}-eip"
-//  }
-//}
-
-// Or create new
-resource "aws_eip" "gateway" {
-  count      = 1
-  vpc        = true
-  depends_on = [aws_internet_gateway.aws-igw]
-
-  tags = {
-    Name = "${var.app_name}-${terraform.workspace}-eip"
-  }
-}
-
-/* The NAT gateway allows resources within the VPC to communicate with
-the internet but will prevent communication to the VPC from outside sources */
-resource "aws_nat_gateway" "gateway" {
-  count         = 1
-  subnet_id     = element(aws_subnet.public.*.id, count.index)
-//  allocation_id = data.aws_eip.eip.id
-  allocation_id = element(aws_eip.gateway.*.id, count.index) // ToDo
-  tags = {
-    Name = "${var.app_name}-${terraform.workspace}-nat"
-  }
-  # To ensure proper ordering, it is recommended to add an explicit dependency
-  # on the Internet Gateway for the VPC.
-  depends_on = [aws_internet_gateway.aws-igw]
-}
-
-resource "aws_route_table" "private" {
-  count  = 1
-  vpc_id = aws_vpc.aws-vpc.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = element(aws_nat_gateway.gateway.*.id, count.index)
-  }
-
-  tags = {
-    Name = "${var.app_name}-${terraform.workspace}-rtb"
-  }
-}
-
-resource "aws_route_table_association" "private" {
-  count          = 1
-  subnet_id      = element(aws_subnet.private.*.id, count.index)
-  route_table_id = element(aws_route_table.private.*.id, count.index)
-}
-
-output "gateway_elastic_ip" {
-  value = aws_eip.gateway.*.public_ip
+//  for_each  = aws_subnet.public
+//  subnet_id = aws_subnet.public[each.key].id
+//  route_table_id = aws_route_table.public.id
 }
