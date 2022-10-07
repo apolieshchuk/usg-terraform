@@ -12,7 +12,7 @@ resource "aws_ecs_service" "aws-ecs-service" {
   // The tasks will run in the private subnet as specified in the network_configuration block
   network_configuration {
     subnets          = aws_subnet.private.*.id
-    assign_public_ip = false
+    assign_public_ip = false // false?
     security_groups = [
       aws_security_group.service_security_group.id,
       aws_security_group.load_balancer_security_group.id
@@ -37,20 +37,28 @@ default VPC and only allow traffic over TCP to port var.app_port of the applicat
 resource "aws_security_group" "service_security_group" {
   vpc_id = aws_vpc.aws-vpc.id
 
-//  ingress {
-//    from_port       = 0
-//    to_port         = 0
-//    protocol        = "-1"
-//    security_groups = [aws_security_group.load_balancer_security_group.id]
-//  }
   ingress {
-    from_port       = var.app_port
-    to_port         = var.app_port
-    protocol        = "tcp"
-    /* The ingress settings also include the security group of the load balancer as that
-    will allow traffic from the network interfaces that are used with that security group */
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
     security_groups = [aws_security_group.load_balancer_security_group.id]
   }
+//  ingress {
+//    from_port       = var.app_port
+//    to_port         = var.app_port
+//    protocol        = "tcp"
+//    /* The ingress settings also include the security group of the load balancer as that
+//    will allow traffic from the network interfaces that are used with that security group */
+//    security_groups = [aws_security_group.load_balancer_security_group.id]
+//  }
+//  ingress {
+//    from_port       = 80
+//    to_port         = 80
+//    protocol        = "tcp"
+//    /* The ingress settings also include the security group of the load balancer as that
+//    will allow traffic from the network interfaces that are used with that security group */
+//    security_groups = [aws_security_group.load_balancer_security_group.id]
+//  }
 
   // It allows all outbound traffic of any protocol as seen in the egress settings
   egress {
