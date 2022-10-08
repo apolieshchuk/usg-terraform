@@ -26,8 +26,8 @@ resource "aws_internet_gateway" "aws-igw" {
  Other things that don’t need to communicate with the internet directly,
  such as a Hello World service defined inside an ECS cluster, will be added to the private subnet. */
 resource "aws_subnet" "private" {
-  vpc_id            = aws_vpc.aws-vpc.id
   count             = length(var.private_subnets)
+  vpc_id            = aws_vpc.aws-vpc.id
   cidr_block        = element(var.private_subnets, count.index)
   availability_zone = element(var.availability_zones, count.index)
 
@@ -54,12 +54,16 @@ resource "aws_subnet" "public" {
   }
 }
 
+# The routing table for the public subnet, going through the internet gateway:
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.aws-vpc.id
 
   tags = {
-    Name        = "${var.app_name}-${terraform.workspace}-routing-table-public"
+    Name = "${var.app_name}-${terraform.workspace}-rtb-public"
+    VPC         = aws_vpc.aws-vpc.id
     Environment = terraform.workspace
+    ManagedBy   = "terraform"
+    Role        = "private"
   }
 }
 

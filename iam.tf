@@ -1,9 +1,8 @@
 resource "aws_iam_role" "ecsTaskExecutionRole" {
-  name               = "${var.app_name}-${terraform.workspace}-execution-task-role"
+  name               = "${var.app_name}-execution-task-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
   tags = {
-    Name        = "${var.app_name}-${terraform.workspace}-iam-role"
-    Environment = terraform.workspace
+    Name        = "${var.app_name}-iam-role"
   }
 }
 
@@ -36,9 +35,6 @@ resource "aws_iam_role_policy" "policy" {
       {
         Action = [
           "secretsmanager:GetSecretValue",
-          "ssm:GetParameters",
-          "secretsmanager:GetSecretValue",
-          "kms:Decrypt",
         ]
         Effect   = "Allow"
         Resource = "*"

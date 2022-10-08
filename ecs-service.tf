@@ -38,27 +38,13 @@ resource "aws_security_group" "service_security_group" {
   vpc_id = aws_vpc.aws-vpc.id
 
   ingress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
+    from_port       = var.app_port
+    to_port         = var.app_port
+    protocol        = "tcp"
+    /* The ingress settings also include the security group of the load balancer as that
+    will allow traffic from the network interfaces that are used with that security group */
     security_groups = [aws_security_group.load_balancer_security_group.id]
   }
-//  ingress {
-//    from_port       = var.app_port
-//    to_port         = var.app_port
-//    protocol        = "tcp"
-//    /* The ingress settings also include the security group of the load balancer as that
-//    will allow traffic from the network interfaces that are used with that security group */
-//    security_groups = [aws_security_group.load_balancer_security_group.id]
-//  }
-//  ingress {
-//    from_port       = 80
-//    to_port         = 80
-//    protocol        = "tcp"
-//    /* The ingress settings also include the security group of the load balancer as that
-//    will allow traffic from the network interfaces that are used with that security group */
-//    security_groups = [aws_security_group.load_balancer_security_group.id]
-//  }
 
   // It allows all outbound traffic of any protocol as seen in the egress settings
   egress {
