@@ -2,7 +2,7 @@ locals {
   scheduler_rules = [
     {
       name: "${terraform.workspace}-turn-on",
-      cron: terraform.workspace == "dev" ? "cron(0 5 ? * * *)" : "cron(0 5 ? * 2-6 *)",
+      cron: terraform.workspace == "dev" ? "cron(0 6 ? * * *)" : "cron(0 6 ? * 2-6 *)",
       desired_tasks: 1
     },
     {
